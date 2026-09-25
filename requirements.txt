@@ -6,3 +6,5 @@ ibm-watsonx-ai
 openai
 gitpython
 httpx
+streamlit>=1.28
+requests

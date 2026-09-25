@@ -4,9 +4,12 @@
     "statement": "A cancelled order must never be shipped.",
     "category": "order-lifecycle",
     "severity": "critical",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "12-14"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "36-45"},
+      {"file": "postmortems/PM-2024-03-ghost-shipments.md", "lines": "1-10"}
+    ],
     "related_entities": ["Order", "Shipment", "OrderStatus"],
-    "related_functions": ["createShipment", "updateOrderStatus", "shipmentJob"],
+    "related_functions": ["cancelOrder", "updateOrderStatus", "shipmentJob", "createShipment"],
     "tags": ["fulfillment", "order-status"]
   },
   {
@@ -14,7 +17,10 @@
     "statement": "A refund must never exceed the original payment amount.",
     "category": "payment",
     "severity": "critical",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "20-22"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "68-74"},
+      {"file": "src/payments.js", "lines": "38-50"}
+    ],
     "related_entities": ["Refund", "Payment", "Order"],
     "related_functions": ["processRefund", "getPaymentAmount"],
     "tags": ["payment", "refund"]
@@ -24,7 +30,11 @@
     "statement": "A discount code must not be applied more than once per customer.",
     "category": "promotions",
     "severity": "high",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "30-32"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "82-92"},
+      {"file": "tickets/TICK-2024-105-discount-code-reuse.md", "lines": "1-10"},
+      {"file": "postmortems/PM-2024-08-duplicate-discount.md", "lines": "1-10"}
+    ],
     "related_entities": ["DiscountCode", "Customer", "Order"],
     "related_functions": ["applyDiscount", "validateDiscountCode"],
     "tags": ["discount", "promotions"]
@@ -34,17 +44,25 @@
     "statement": "A support agent must not modify payment details, only view them.",
     "category": "access-control",
     "severity": "critical",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "40-42"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "97-107"},
+      {"file": "tickets/TICK-2024-118-support-agent-payment-modification.md", "lines": "1-10"},
+      {"file": "src/accessControl.js", "lines": "64-76"}
+    ],
     "related_entities": ["SupportAgent", "Payment", "Role"],
     "related_functions": ["updatePaymentDetails", "getPaymentDetails"],
     "tags": ["access-control", "security", "payment"]
   },
   {
     "id": "RULE-005",
-    "statement": "A user must only access orders belonging to their own organization.",
+    "statement": "A user must only access orders belonging to their own organisation.",
     "category": "access-control",
     "severity": "critical",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "50-52"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "112-122"},
+      {"file": "src/accessControl.js", "lines": "22-34"},
+      {"file": "src/orders.js", "lines": "89-96"}
+    ],
     "related_entities": ["User", "Organization", "Order"],
     "related_functions": ["getOrdersByUser", "validateOrgAccess"],
     "tags": ["access-control", "security", "multi-tenant"]
@@ -54,7 +72,10 @@
     "statement": "An order that is already shipped must not transition back to PENDING or PAID status.",
     "category": "order-lifecycle",
     "severity": "high",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "16-18"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "16-30"},
+      {"file": "src/orders.js", "lines": "17-27"}
+    ],
     "related_entities": ["Order", "OrderStatus"],
     "related_functions": ["updateOrderStatus", "validateStatusTransition"],
     "tags": ["order-status", "fulfillment"]
@@ -64,9 +85,13 @@
     "statement": "Payment must be confirmed before an order is marked PAID.",
     "category": "payment",
     "severity": "critical",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "8-10"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "50-62"},
+      {"file": "tickets/TICK-2024-091-optimistic-payment-marking.md", "lines": "1-10"},
+      {"file": "src/orders.js", "lines": "73-80"}
+    ],
     "related_entities": ["Payment", "Order", "PaymentGateway"],
-    "related_functions": ["confirmPayment", "markOrderPaid"],
+    "related_functions": ["confirmPayment", "markOrderPaid", "processOrder"],
     "tags": ["payment", "order-status"]
   },
   {
@@ -74,7 +99,11 @@
     "statement": "Inventory must be decremented atomically when a shipment is created to prevent overselling.",
     "category": "inventory",
     "severity": "high",
-    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "60-63"}],
+    "source_refs": [
+      {"file": "docs/order-lifecycle.md", "lines": "126-135"},
+      {"file": "src/shipments.js", "lines": "43-52"},
+      {"file": "src/inventory.js", "lines": "45-57"}
+    ],
     "related_entities": ["Inventory", "Shipment", "Product"],
     "related_functions": ["createShipment", "decrementInventory"],
     "tags": ["inventory", "fulfillment"]

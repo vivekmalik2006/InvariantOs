@@ -1,0 +1,19 @@
+{
+  "docs\\order-lifecycle.md": "1d5b7bf68659de93b5c9321756115bc2",
+  "postmortems\\PM-2024-03-ghost-shipments.md": "f82aa4e3eb605c78147edd823189865e",
+  "postmortems\\PM-2024-08-duplicate-discount.md": "83094336801dbc59392feb6bfe378fe5",
+  "src\\accessControl.js": "784c81de7af131a9a26e293611b34e11",
+  "src\\discounts.js": "dfd3b9541712e8e8bad37d216ac6f3c8",
+  "src\\inventory.js": "fe185065ead809106479ba0e7678bfa8",
+  "src\\orders.js": "0c8f31501db35487801cd41c8cd86517",
+  "src\\payments.js": "878ccfe99abbef4f801c44d45fba2628",
+  "src\\shipments.js": "b8f4abe144c493153becfa3c0094dbbd",
+  "src\\warehouseApi.js": "d578eecda3111fa2f347091ff49a69a2",
+  "tests\\orders.test.js": "270eb7636c523e381f35bba5dad54d5a",
+  "tests\\payments.test.js": "19d3129102a080ef6bdb1e0f6eae25d6",
+  "tests\\shipments.test.js": "91b3c6362721a43d55ae25a6316056b0",
+  "tests\\generated\\rule_001_regression.test.js": "b2042cada84c9d1263cb85aa563466f4",
+  "tickets\\TICK-2024-091-optimistic-payment-marking.md": "5ee7261e9742365a0ada84fbf0c343a9",
+  "tickets\\TICK-2024-105-discount-code-reuse.md": "444e78094022277eea7531526303b06c",
+  "tickets\\TICK-2024-118-support-agent-payment-modification.md": "ba737c1bc5d56a52173a0c7ac32092cc"
+}

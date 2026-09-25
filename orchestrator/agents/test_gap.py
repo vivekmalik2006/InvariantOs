@@ -1,24 +1,36 @@
 """
-Test Gap Agent — STUB (Member 3 owns the real implementation).
+Test Gap Agent — Member 3 (Real Implementation).
 
-This stub satisfies the function signature agreed with Member 2 so that
-orchestrator.py can call it without modification when Member 3 swaps in the
-real implementation.
+For each impacted rule:
+  1. Coverage check: scan test files for references to the rule's call chain
+     AND assertions about the violating condition (e.g. CANCELLED status).
+  2. If no coverage found, call the LLM to generate a real Jest regression test.
+  3. Write the generated test to demo-repo/tests/generated/rule_XXX_regression.test.js.
+
+Fallback: if the LLM call fails, write a deterministic stub test that still
+correctly tests the CANCELLED-order scenario for RULE-001.
 """
 from __future__ import annotations
+
+import json
 import logging
 import os
 import re
+from pathlib import Path
 
 from orchestrator.schemas import ImpactedRule, TestGap
 
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
 def analyze(diff: str, impacted_rules: list[ImpactedRule], repo_path: str) -> list[TestGap]:
     """
-    Check test coverage for each impacted rule and, if missing, generate a
-    regression test.
+    Check test coverage for each impacted rule and generate a regression test
+    if coverage is missing.
 
     Args:
         diff:            Raw unified-diff string of the PR.
@@ -27,17 +39,14 @@ def analyze(diff: str, impacted_rules: list[ImpactedRule], repo_path: str) -> li
 
     Returns:
         A list of TestGap — one per impacted rule.
-
-    NOTE: This is a stub implementation. The real implementation (Member 3)
-    will walk repo_path/tests/**, run coverage heuristics, and call the LLM
-    to generate real Jest tests.
     """
     gaps: list[TestGap] = []
 
     for impacted in impacted_rules:
-        has_coverage = _cheap_coverage_check(impacted, repo_path)
+        has_coverage, matched_file = _check_coverage(impacted, repo_path)
 
         if has_coverage:
+            logger.info("Coverage confirmed for %s in %s", impacted.rule_id, matched_file)
             gaps.append(TestGap(
                 rule_id=impacted.rule_id,
                 has_coverage=True,
@@ -45,11 +54,10 @@ def analyze(diff: str, impacted_rules: list[ImpactedRule], repo_path: str) -> li
                 generated_test_code=None,
             ))
         else:
-            # Generate a minimal stub test so the pipeline has something to show
-            test_code = _generate_stub_test(impacted, diff)
-            test_path = f"{repo_path}/tests/generated/rule_{impacted.rule_id.lower().replace('-', '_')}_regression.test.js"
+            logger.info("No coverage found for %s — generating regression test.", impacted.rule_id)
+            test_code = _generate_test(impacted, diff, repo_path)
+            test_path = _test_output_path(impacted, repo_path)
 
-            # Write it to disk if possible
             _write_test_file(test_path, test_code)
 
             gaps.append(TestGap(
@@ -63,91 +71,211 @@ def analyze(diff: str, impacted_rules: list[ImpactedRule], repo_path: str) -> li
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
+# Coverage detection
 # ---------------------------------------------------------------------------
 
-def _cheap_coverage_check(impacted: ImpactedRule, repo_path: str) -> bool:
+def _check_coverage(impacted: ImpactedRule, repo_path: str) -> tuple[bool, str]:
     """
-    Heuristic: scan test files for references to any function in the call chain.
-    Returns True only if we find a test that BOTH calls a relevant function AND
-    asserts on the outcome of a 'CANCELLED' path.
+    Return (has_coverage, matched_file_path).
+
+    Coverage is confirmed only if we find a test that:
+      1. References at least one function from the affected call chain.
+      2. AND contains an assertion about the violation condition (e.g. 'CANCELLED').
+
+    Generated tests are excluded from coverage — they count as "no coverage" so
+    the agent always has an opportunity to refresh the generated test.
     """
     tests_dir = os.path.join(repo_path, "tests")
     if not os.path.isdir(tests_dir):
-        return False
+        return False, ""
 
-    chain_lower = [fn.lower() for fn in impacted.affected_call_chain]
+    chain_lower = [fn.lower() for fn in (impacted.affected_call_chain or [])]
+    # Keyword hint from the rule ID — RULE-001 looks for CANCELLED condition
+    violation_hints = _get_violation_hints(impacted)
 
-    for dirpath, _, filenames in os.walk(tests_dir):
+    for dirpath, dirnames, filenames in os.walk(tests_dir):
+        # Skip the generated/ subdirectory — generated tests don't count as real coverage
+        dirnames[:] = [d for d in dirnames if d != "generated"]
         for fname in filenames:
-            if not (fname.endswith(".test.js") or fname.endswith(".spec.js") or fname.endswith(".test.ts")):
+            if not (fname.endswith(".test.js") or fname.endswith(".spec.js")
+                    or fname.endswith(".test.ts")):
                 continue
             fpath = os.path.join(dirpath, fname)
             try:
                 with open(fpath, encoding="utf-8") as f:
                     content = f.read().lower()
-                if any(fn in content for fn in chain_lower) and "cancelled" in content:
-                    return True
+                chain_hit = any(fn in content for fn in chain_lower)
+                violation_hit = any(hint in content for hint in violation_hints)
+                if chain_hit and violation_hit:
+                    return True, fpath
             except OSError:
                 continue
 
-    return False
+    return False, ""
 
 
-def _generate_stub_test(impacted: ImpactedRule, diff: str) -> str:
+def _get_violation_hints(impacted: ImpactedRule) -> list[str]:
     """
-    Generate a minimal Jest test stub that demonstrates the violation scenario.
-    Member 3's real implementation replaces this with LLM-generated code.
+    Return lowercase strings that indicate a test is asserting the violation condition.
+    Derived from the rule's call chain and common patterns.
+    """
+    hints = ["cancelled", "violation", "must not", "should not", "not.tohavebeencalled",
+             "not tohavebeencalled", "toberejected", "tothrow", "rejects"]
+    # Add any identifiers from the rule_id pattern
+    rule_lower = impacted.rule_id.lower().replace("-", "_")
+    hints.append(rule_lower)
+    return hints
+
+
+# ---------------------------------------------------------------------------
+# Test generation
+# ---------------------------------------------------------------------------
+
+_TEST_GEN_SYSTEM_PROMPT = """\
+You are a senior JavaScript/Jest test engineer. You will be given:
+1. A business rule that a code change might violate.
+2. The call chain affected by the change.
+3. The PR diff showing the change.
+
+Write a Jest test file that:
+- Uses jest.mock() for all external dependencies.
+- Has a primary test named to clearly describe the violation scenario.
+- Contains an assertion that FAILS on the buggy code and PASSES on the fixed code.
+- Uses async/await where appropriate.
+- Is self-contained and can be run with `npx jest` from the repo root.
+- Imports from relative paths like `../../src/...`.
+
+Return ONLY the test file contents — no markdown fences, no explanation."""
+
+
+def _generate_test(impacted: ImpactedRule, diff: str, repo_path: str) -> str:
+    """Generate a Jest regression test via LLM, with a safe fallback."""
+    try:
+        from orchestrator.llm_client import complete, LLMClientError  # type: ignore
+
+        call_chain = " → ".join(impacted.affected_call_chain) if impacted.affected_call_chain else "unknown"
+        entry_fn = impacted.affected_call_chain[0] if impacted.affected_call_chain else "unknownFunction"
+        final_fn = impacted.affected_call_chain[-1] if impacted.affected_call_chain else "unknownFunction"
+        source_module = _infer_source_module(entry_fn)
+
+        user_prompt = (
+            f"Rule: {impacted.rule_id}\n"
+            f"Statement: {impacted.reason}\n"
+            f"Call chain: {call_chain}\n"
+            f"Entry function: {entry_fn} (from {source_module})\n"
+            f"Terminal function: {final_fn}\n\n"
+            f"PR diff:\n```\n{diff[:2000]}\n```\n\n"
+            "Write a Jest test file for this regression. "
+            "The primary test must assert that a CANCELLED order does NOT trigger "
+            f"{final_fn}. Include a second test confirming a PAID order DOES trigger it."
+        )
+
+        test_code = complete(_TEST_GEN_SYSTEM_PROMPT, user_prompt)
+        # Strip any accidental markdown fences
+        test_code = re.sub(r"^```(?:javascript|js)?\s*", "", test_code, flags=re.MULTILINE)
+        test_code = re.sub(r"\s*```\s*$", "", test_code, flags=re.MULTILINE)
+        test_code = test_code.strip()
+
+        if len(test_code) < 100:
+            raise ValueError("LLM returned implausibly short test code.")
+
+        logger.info("LLM generated test for %s (%d chars)", impacted.rule_id, len(test_code))
+        return test_code
+
+    except Exception as exc:
+        logger.warning(
+            "LLM test generation failed for %s (%s); using deterministic fallback.",
+            impacted.rule_id, exc,
+        )
+        return _fallback_test(impacted)
+
+
+def _infer_source_module(fn_name: str) -> str:
+    """Map a function name to its most likely source module path."""
+    fn_lower = fn_name.lower()
+    if any(k in fn_lower for k in ["order", "cancel", "status"]):
+        return "../../src/orders"
+    if any(k in fn_lower for k in ["shipment", "ship", "warehouse"]):
+        return "../../src/shipments"
+    if any(k in fn_lower for k in ["payment", "refund", "pay"]):
+        return "../../src/payments"
+    if any(k in fn_lower for k in ["discount", "coupon"]):
+        return "../../src/discounts"
+    return "../../src/orders"
+
+
+def _fallback_test(impacted: ImpactedRule) -> str:
+    """
+    Deterministic fallback test for the demo scenario.
+    For RULE-001 this test WILL fail on the buggy branch and pass on main.
     """
     rule_id = impacted.rule_id
-    call_chain = impacted.affected_call_chain or ["<unknown>"]
-    entry_fn = call_chain[0] if call_chain else "unknownFunction"
-    final_fn = call_chain[-1] if call_chain else "unknownFunction"
+    call_chain = impacted.affected_call_chain or ["cancelOrder", "updateOrderStatus", "shipmentJob", "warehouseAPI.createShipment"]
+    entry_fn = call_chain[0]
+    final_fn = call_chain[-1]
+    source_module = _infer_source_module(entry_fn)
 
     return f"""\
 /**
  * Regression test for {rule_id}
- * Auto-generated by InvariantOS Test Gap Agent (stub).
+ * Auto-generated by InvariantOS Test Gap Agent.
+ *
  * Rule: {impacted.reason}
+ * Call chain: {" → ".join(call_chain)}
  *
  * This test MUST FAIL on the buggy branch and PASS on the fixed branch.
- * Replace the stub body with real assertions once Member 3's agent is live.
  */
 
-const {{ {entry_fn} }} = require('../../src/orders');
+'use strict';
+
+const {{ {entry_fn} }} = require('{source_module}');
 const {{ shipmentJob }} = require('../../src/shipments');
 const warehouseApi = require('../../src/warehouseApi');
 
 jest.mock('../../src/warehouseApi');
+jest.mock('../../src/inventory', () => ({{
+  decrementInventory: jest.fn().mockResolvedValue(undefined),
+}}));
 
 describe('{rule_id} regression', () => {{
   beforeEach(() => {{
     jest.clearAllMocks();
+    warehouseApi.createShipment.mockResolvedValue({{ shipmentId: 'SHIP-GEN', status: 'CREATED' }});
   }});
 
-  test('A CANCELLED order must NOT trigger createShipment', async () => {{
-    const order = {{ id: 'test-order-1', status: 'CANCELLED' }};
+  test('A CANCELLED order must NOT trigger createShipment (RULE-001)', async () => {{
+    const originalOrder = {{ id: 'ORD-REG-001', status: 'PAID', items: [] }};
+    const cancelledOrder = {entry_fn}(originalOrder);  // transitions to CANCELLED
 
-    await shipmentJob(order);
+    const result = await shipmentJob(cancelledOrder);
 
-    // This assertion should FAIL on the buggy branch (status !== 'CANCELLED' lets it through)
-    // and PASS on the fixed branch (status === 'PAID' guard blocks it)
+    // On buggy branch (status !== CANCELLED), this fails because CANCELLED passes the guard.
+    // On fixed branch (status === PAID), this passes because CANCELLED is blocked.
     expect(warehouseApi.createShipment).not.toHaveBeenCalled();
+    expect(result).toBeNull();
   }});
 
   test('A PAID order SHOULD trigger createShipment', async () => {{
-    const order = {{ id: 'test-order-2', status: 'PAID' }};
-
+    const order = {{ id: 'ORD-REG-002', status: 'PAID', items: [] }};
     await shipmentJob(order);
-
-    expect(warehouseApi.createShipment).toHaveBeenCalledWith(order);
+    expect(warehouseApi.createShipment).toHaveBeenCalledTimes(1);
   }});
 }});
 """
 
 
+# ---------------------------------------------------------------------------
+# File I/O
+# ---------------------------------------------------------------------------
+
+def _test_output_path(impacted: ImpactedRule, repo_path: str) -> str:
+    """Compute the output path for the generated test file."""
+    rule_slug = impacted.rule_id.lower().replace("-", "_")
+    return os.path.join(repo_path, "tests", "generated", f"{rule_slug}_regression.test.js")
+
+
 def _write_test_file(path: str, code: str) -> None:
-    """Write generated test to disk if the directory exists."""
+    """Write generated test to disk."""
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
