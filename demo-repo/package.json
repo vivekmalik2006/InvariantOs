@@ -1,0 +1,24 @@
+{
+  "name": "invariantos-demo-repo",
+  "version": "1.0.0",
+  "description": "Demo e-commerce service for InvariantOS — contains seeded business-rule violations for the hackathon demo.",
+  "private": true,
+  "scripts": {
+    "test": "jest --runInBand",
+    "test:verbose": "jest --runInBand --verbose",
+    "test:coverage": "jest --runInBand --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js",
+      "**/tests/**/*.spec.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
