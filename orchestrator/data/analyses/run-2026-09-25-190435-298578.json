@@ -1,0 +1,148 @@
+{
+  "analysis_id": "run-2026-09-25-190435-298578",
+  "pr_diff_summary": "Changes in src/shipments.js — modified symbols: shipmentJob (+1 lines, -1 lines).",
+  "impacted_rules": [
+    {
+      "rule_id": "RULE-001",
+      "reason": "The diff touches symbols related to rule 'RULE-001' (createShipment, updateOrderStatus, shipmentJob).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "createShipment",
+        "updateOrderStatus",
+        "shipmentJob"
+      ]
+    },
+    {
+      "rule_id": "RULE-002",
+      "reason": "The diff touches symbols related to rule 'RULE-002' (processRefund, getPaymentAmount).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "processRefund",
+        "getPaymentAmount"
+      ]
+    },
+    {
+      "rule_id": "RULE-003",
+      "reason": "The diff touches symbols related to rule 'RULE-003' (applyDiscount, validateDiscountCode).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "applyDiscount",
+        "validateDiscountCode"
+      ]
+    },
+    {
+      "rule_id": "RULE-005",
+      "reason": "The diff touches symbols related to rule 'RULE-005' (getOrdersByUser, validateOrgAccess).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "getOrdersByUser",
+        "validateOrgAccess"
+      ]
+    },
+    {
+      "rule_id": "RULE-006",
+      "reason": "The diff touches symbols related to rule 'RULE-006' (updateOrderStatus, validateStatusTransition).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "updateOrderStatus",
+        "validateStatusTransition"
+      ]
+    },
+    {
+      "rule_id": "RULE-007",
+      "reason": "The diff touches symbols related to rule 'RULE-007' (confirmPayment, markOrderPaid).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "confirmPayment",
+        "markOrderPaid"
+      ]
+    }
+  ],
+  "validation_results": [
+    {
+      "rule_id": "RULE-001",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-002",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-003",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-005",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-006",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-007",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    }
+  ],
+  "security_findings": [
+    {
+      "rule_id": "RULE-005",
+      "risk_type": null,
+      "verdict": "OK",
+      "explanation": "Security stub: no tenant/org_id field is touched by this diff. Full analysis pending Member 3 implementation."
+    }
+  ],
+  "test_gaps": [
+    {
+      "rule_id": "RULE-001",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-002",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-003",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-005",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-006",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-007",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    }
+  ],
+  "final_verdict": "NEEDS_EVIDENCE",
+  "final_verdict_label": "NEEDS EVIDENCE: Critical Rule Has No Regression Coverage",
+  "summary_markdown": "## ⚠️ InvariantOS — NEEDS EVIDENCE: Critical Rule Has No Regression Coverage\n\n**Diff summary:** Changes in src/shipments.js — modified symbols: shipmentJob (+1 lines, -1 lines).\n\n### Impacted Rules\n\n#### RULE-001 — **NEEDS_EVIDENCE**\n- **Reason:** The diff touches symbols related to rule 'RULE-001' (createShipment, updateOrderStatus, shipmentJob).\n- **Confidence:** medium\n- **Call chain:** `createShipment → updateOrderStatus → shipmentJob`\n- **Explanation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n#### RULE-002 — **NEEDS_EVIDENCE**\n- **Reason:** The diff touches symbols related to rule 'RULE-002' (processRefund, getPaymentAmount).\n- **Confidence:** medium\n- **Call chain:** `processRefund → getPaymentAmount`\n- **Explanation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n#### RULE-003 — **NEEDS_EVIDENCE**\n- **Reason:** The diff touches symbols related to rule 'RULE-003' (applyDiscount, validateDiscountCode).\n- **Confidence:** medium\n- **Call chain:** `applyDiscount → validateDiscountCode`\n- **Explanation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n#### RULE-005 — **NEEDS_EVIDENCE**\n- **Reason:** The diff touches symbols related to rule 'RULE-005' (getOrdersByUser, validateOrgAccess).\n- **Confidence:** medium\n- **Call chain:** `getOrdersByUser → validateOrgAccess`\n- **Explanation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n#### RULE-006 — **NEEDS_EVIDENCE**\n- **Reason:** The diff touches symbols related to rule 'RULE-006' (updateOrderStatus, validateStatusTransition).\n- **Confidence:** medium\n- **Call chain:** `updateOrderStatus → validateStatusTransition`\n- **Explanation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n#### RULE-007 — **NEEDS_EVIDENCE**\n- **Reason:** The diff touches symbols related to rule 'RULE-007' (confirmPayment, markOrderPaid).\n- **Confidence:** medium\n- **Call chain:** `confirmPayment → markOrderPaid`\n- **Explanation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n### Security & Access Findings\n\n- ✅ **RULE-005:** Security stub: no tenant/org_id field is touched by this diff. Full analysis pending Member 3 implementation.\n\n---\n_Generated by InvariantOS at 2026-09-25 19:04 UTC_"
+}

@@ -1,0 +1,150 @@
+"""
+Evidence Report Agent — STUB (Member 4 owns the real implementation).
+
+This stub satisfies the function signature so that orchestrator.py can call it
+without modification when Member 4 swaps in the real implementation.
+"""
+from __future__ import annotations
+import logging
+from datetime import datetime, timezone
+
+from orchestrator.schemas import (
+    AnalysisReport,
+    ImpactedRule,
+    SecurityFinding,
+    TestGap,
+    ValidationResult,
+)
+
+logger = logging.getLogger(__name__)
+
+
+def generate(
+    diff_summary: str,
+    impacted_rules: list[ImpactedRule],
+    validation_results: list[ValidationResult],
+    security_findings: list[SecurityFinding],
+    test_gaps: list[TestGap],
+    final_verdict: str,
+    final_verdict_label: str,
+    analysis_id: str,
+) -> AnalysisReport:
+    """
+    Assemble the final AnalysisReport with a human-readable summary_markdown.
+
+    Args:
+        diff_summary:       One-line summary of what the diff does.
+        impacted_rules:     Output of the Change Impact Agent.
+        validation_results: Output of the Contract Validation Agent.
+        security_findings:  Output of the Security & Access Agent.
+        test_gaps:          Output of the Test Gap Agent.
+        final_verdict:      "SAFE" | "BLOCK" | "NEEDS_EVIDENCE" (computed in orchestrator).
+        final_verdict_label: Human-readable verdict label.
+        analysis_id:        Unique run identifier.
+
+    Returns:
+        A fully populated AnalysisReport.
+
+    NOTE: This is a stub — Member 4's real implementation replaces
+    summary_markdown with a polished LLM-generated PR comment.
+    """
+    summary_markdown = _render_summary(
+        diff_summary,
+        impacted_rules,
+        validation_results,
+        security_findings,
+        test_gaps,
+        final_verdict,
+    )
+
+    return AnalysisReport(
+        analysis_id=analysis_id,
+        pr_diff_summary=diff_summary,
+        impacted_rules=impacted_rules,
+        validation_results=validation_results,
+        security_findings=security_findings,
+        test_gaps=test_gaps,
+        final_verdict=final_verdict,
+        final_verdict_label=final_verdict_label,
+        summary_markdown=summary_markdown,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Markdown renderer (stub quality — Member 4 will polish this)
+# ---------------------------------------------------------------------------
+
+_VERDICT_ICONS = {
+    "SAFE": "✅",
+    "BLOCK": "🛑",
+    "NEEDS_EVIDENCE": "⚠️",
+}
+
+_VERDICT_HEADINGS = {
+    "SAFE": "SAFE TO MERGE",
+    "BLOCK": "BLOCK: Business Rule Violated",
+    "NEEDS_EVIDENCE": "NEEDS EVIDENCE: Critical Rule Has No Regression Coverage",
+}
+
+
+def _render_summary(
+    diff_summary: str,
+    impacted_rules: list[ImpactedRule],
+    validation_results: list[ValidationResult],
+    security_findings: list[SecurityFinding],
+    test_gaps: list[TestGap],
+    final_verdict: str,
+) -> str:
+    icon = _VERDICT_ICONS.get(final_verdict, "⚠️")
+    heading = _VERDICT_HEADINGS.get(final_verdict, final_verdict)
+
+    lines: list[str] = [
+        f"## {icon} InvariantOS — {heading}",
+        "",
+        f"**Diff summary:** {diff_summary}",
+        "",
+    ]
+
+    # ---- Impacted rules section ----
+    if impacted_rules:
+        lines.append("### Impacted Rules")
+        lines.append("")
+        vr_map = {vr.rule_id: vr for vr in validation_results}
+        tg_map = {tg.rule_id: tg for tg in test_gaps}
+
+        for ir in impacted_rules:
+            vr = vr_map.get(ir.rule_id)
+            tg = tg_map.get(ir.rule_id)
+            verdict_str = f"**{vr.verdict}**" if vr else "_not validated_"
+            lines.append(f"#### {ir.rule_id} — {verdict_str}")
+            lines.append(f"- **Reason:** {ir.reason}")
+            lines.append(f"- **Confidence:** {ir.confidence}")
+            if ir.affected_call_chain:
+                chain = " → ".join(ir.affected_call_chain)
+                lines.append(f"- **Call chain:** `{chain}`")
+            if vr:
+                lines.append(f"- **Explanation:** {vr.explanation}")
+                if vr.evidence:
+                    ev = ", ".join(vr.evidence)
+                    lines.append(f"- **Evidence:** {ev}")
+            if tg and not tg.has_coverage:
+                lines.append(f"- **⚠️ No regression test found.**")
+                if tg.generated_test_path:
+                    lines.append(f"  - Generated test: `{tg.generated_test_path}`")
+            lines.append("")
+
+    # ---- Security findings ----
+    if security_findings:
+        lines.append("### Security & Access Findings")
+        lines.append("")
+        for sf in security_findings:
+            icon_s = "✅" if sf.verdict == "OK" else "🛑"
+            lines.append(f"- {icon_s} **{sf.rule_id}:** {sf.explanation}")
+        lines.append("")
+
+    # ---- Footer ----
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines.append(f"---")
+    lines.append(f"_Generated by InvariantOS at {ts}_")
+
+    return "\n".join(lines)

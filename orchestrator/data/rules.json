@@ -1,0 +1,82 @@
+[
+  {
+    "id": "RULE-001",
+    "statement": "A cancelled order must never be shipped.",
+    "category": "order-lifecycle",
+    "severity": "critical",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "12-14"}],
+    "related_entities": ["Order", "Shipment", "OrderStatus"],
+    "related_functions": ["createShipment", "updateOrderStatus", "shipmentJob"],
+    "tags": ["fulfillment", "order-status"]
+  },
+  {
+    "id": "RULE-002",
+    "statement": "A refund must never exceed the original payment amount.",
+    "category": "payment",
+    "severity": "critical",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "20-22"}],
+    "related_entities": ["Refund", "Payment", "Order"],
+    "related_functions": ["processRefund", "getPaymentAmount"],
+    "tags": ["payment", "refund"]
+  },
+  {
+    "id": "RULE-003",
+    "statement": "A discount code must not be applied more than once per customer.",
+    "category": "promotions",
+    "severity": "high",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "30-32"}],
+    "related_entities": ["DiscountCode", "Customer", "Order"],
+    "related_functions": ["applyDiscount", "validateDiscountCode"],
+    "tags": ["discount", "promotions"]
+  },
+  {
+    "id": "RULE-004",
+    "statement": "A support agent must not modify payment details, only view them.",
+    "category": "access-control",
+    "severity": "critical",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "40-42"}],
+    "related_entities": ["SupportAgent", "Payment", "Role"],
+    "related_functions": ["updatePaymentDetails", "getPaymentDetails"],
+    "tags": ["access-control", "security", "payment"]
+  },
+  {
+    "id": "RULE-005",
+    "statement": "A user must only access orders belonging to their own organization.",
+    "category": "access-control",
+    "severity": "critical",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "50-52"}],
+    "related_entities": ["User", "Organization", "Order"],
+    "related_functions": ["getOrdersByUser", "validateOrgAccess"],
+    "tags": ["access-control", "security", "multi-tenant"]
+  },
+  {
+    "id": "RULE-006",
+    "statement": "An order that is already shipped must not transition back to PENDING or PAID status.",
+    "category": "order-lifecycle",
+    "severity": "high",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "16-18"}],
+    "related_entities": ["Order", "OrderStatus"],
+    "related_functions": ["updateOrderStatus", "validateStatusTransition"],
+    "tags": ["order-status", "fulfillment"]
+  },
+  {
+    "id": "RULE-007",
+    "statement": "Payment must be confirmed before an order is marked PAID.",
+    "category": "payment",
+    "severity": "critical",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "8-10"}],
+    "related_entities": ["Payment", "Order", "PaymentGateway"],
+    "related_functions": ["confirmPayment", "markOrderPaid"],
+    "tags": ["payment", "order-status"]
+  },
+  {
+    "id": "RULE-008",
+    "statement": "Inventory must be decremented atomically when a shipment is created to prevent overselling.",
+    "category": "inventory",
+    "severity": "high",
+    "source_refs": [{"file": "docs/order-lifecycle.md", "lines": "60-63"}],
+    "related_entities": ["Inventory", "Shipment", "Product"],
+    "related_functions": ["createShipment", "decrementInventory"],
+    "tags": ["inventory", "fulfillment"]
+  }
+]
