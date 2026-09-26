@@ -1,0 +1,87 @@
+{
+  "analysis_id": "run-2026-09-26-183607-5849c7",
+  "pr_diff_summary": "Changes in src/shipments.js — modified symbols: require, shipmentJob (+1 lines, -3 lines).",
+  "impacted_rules": [
+    {
+      "rule_id": "RULE-001",
+      "reason": "The diff changes the condition for shipping orders from not being 'CANCELLED' to being 'PAID', which directly affects the rule that a cancelled order must never be shipped.",
+      "confidence": "high",
+      "affected_call_chain": [
+        "shipmentJob",
+        "createShipment"
+      ]
+    },
+    {
+      "rule_id": "RULE-006",
+      "reason": "The diff changes the condition for shipping orders, which may affect the rule that an order that is already shipped must not transition back to PENDING or PAID status, as the new condition allows other statuses to trigger shipment.",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "shipmentJob",
+        "updateOrderStatus"
+      ]
+    },
+    {
+      "rule_id": "RULE-008",
+      "reason": "The diff changes the condition for shipping orders, which may affect the rule that inventory must be decremented atomically when a shipment is created, as the new condition allows other statuses to trigger shipment and potentially affect inventory.",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "shipmentJob",
+        "createShipment",
+        "decrementInventory"
+      ]
+    }
+  ],
+  "validation_results": [
+    {
+      "rule_id": "RULE-001",
+      "verdict": "OK",
+      "explanation": "The PR diff changes the condition in the shipmentJob function to only allow orders with a status of 'PAID' to be shipped, which aligns with the business rule that a cancelled order must never be shipped.",
+      "evidence": [
+        "src/shipments.js:22-25",
+        "docs/order-lifecycle.md:36-45"
+      ]
+    },
+    {
+      "rule_id": "RULE-006",
+      "verdict": "OK",
+      "explanation": "The PR diff actually fixes a bug that could have allowed non-PAID orders to be shipped, which could have potentially led to a violation of RULE-006, but the fix itself does not introduce any new transitions that would violate the rule, and the condition is now correctly checking for 'PAID' status.",
+      "evidence": [
+        "src/shipments.js:22-27",
+        "docs/order-lifecycle.md:16-30"
+      ]
+    },
+    {
+      "rule_id": "RULE-008",
+      "verdict": "OK",
+      "explanation": "The PR diff does not appear to modify the inventory decrement logic, and the change to the order status check does not affect the atomicity of the inventory decrement operation.",
+      "evidence": [
+        "src/shipments.js:22-27",
+        "docs/order-lifecycle.md:126-135"
+      ]
+    }
+  ],
+  "security_findings": [],
+  "test_gaps": [
+    {
+      "rule_id": "RULE-001",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-006",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-008",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    }
+  ],
+  "final_verdict": "SAFE",
+  "final_verdict_label": "SAFE TO MERGE",
+  "summary_markdown": "## ✅ SAFE TO MERGE\n\n> **InvariantOS verdict:** `SAFE TO MERGE` — No business rules are violated by this change.\n\n**Analysis ID:** `run-2026-09-26-183607-5849c7`  \n**Analysed at:** 2026-09-26 18:36 UTC\n\n---\n\n### 📋 What this PR does\n\nChanges in src/shipments.js — modified symbols: require, shipmentJob (+1 lines, -3 lines).\n\n---\n\n### 📌 Impacted Business Rules\n\n#### RULE-001 — ✅ OK\n\n**Why impacted:** The diff changes the condition for shipping orders from not being 'CANCELLED' to being 'PAID', which directly affects the rule that a cancelled order must never be shipped.\n**Confidence:** `high`\n**Call chain:** `shipmentJob` → `createShipment`\n\n**Validation:** The PR diff changes the condition in the shipmentJob function to only allow orders with a status of 'PAID' to be shipped, which aligns with the business rule that a cancelled order must never be shipped.\n\n**Evidence:**\n  - src/shipments.js:22-25\n  - docs/order-lifecycle.md:36-45\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-006 — ✅ OK\n\n**Why impacted:** The diff changes the condition for shipping orders, which may affect the rule that an order that is already shipped must not transition back to PENDING or PAID status, as the new condition allows other statuses to trigger shipment.\n**Confidence:** `medium`\n**Call chain:** `shipmentJob` → `updateOrderStatus`\n\n**Validation:** The PR diff actually fixes a bug that could have allowed non-PAID orders to be shipped, which could have potentially led to a violation of RULE-006, but the fix itself does not introduce any new transitions that would violate the rule, and the condition is now correctly checking for 'PAID' status.\n\n**Evidence:**\n  - src/shipments.js:22-27\n  - docs/order-lifecycle.md:16-30\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-008 — ✅ OK\n\n**Why impacted:** The diff changes the condition for shipping orders, which may affect the rule that inventory must be decremented atomically when a shipment is created, as the new condition allows other statuses to trigger shipment and potentially affect inventory.\n**Confidence:** `medium`\n**Call chain:** `shipmentJob` → `createShipment` → `decrementInventory`\n\n**Validation:** The PR diff does not appear to modify the inventory decrement logic, and the change to the order status check does not affect the atomicity of the inventory decrement operation.\n\n**Evidence:**\n  - src/shipments.js:22-27\n  - docs/order-lifecycle.md:126-135\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n---\n\n_🤖 Generated by [InvariantOS](https://github.com/invariantos) at 2026-09-26 18:36 UTC_\n_Analysis ID: `run-2026-09-26-183607-5849c7`_"
+}

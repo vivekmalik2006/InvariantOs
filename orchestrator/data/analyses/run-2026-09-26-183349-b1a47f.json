@@ -1,0 +1,171 @@
+{
+  "analysis_id": "run-2026-09-26-183349-b1a47f",
+  "pr_diff_summary": "Changes in src/shipments.js — modified symbols: require, shipmentJob (+3 lines, -1 lines).",
+  "impacted_rules": [
+    {
+      "rule_id": "RULE-001",
+      "reason": "The diff touches symbols related to rule 'RULE-001' (cancelOrder, updateOrderStatus, shipmentJob).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "cancelOrder",
+        "updateOrderStatus",
+        "shipmentJob",
+        "createShipment"
+      ]
+    },
+    {
+      "rule_id": "RULE-002",
+      "reason": "The diff touches symbols related to rule 'RULE-002' (processRefund, getPaymentAmount).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "processRefund",
+        "getPaymentAmount"
+      ]
+    },
+    {
+      "rule_id": "RULE-003",
+      "reason": "The diff touches symbols related to rule 'RULE-003' (applyDiscount, validateDiscountCode).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "applyDiscount",
+        "validateDiscountCode"
+      ]
+    },
+    {
+      "rule_id": "RULE-005",
+      "reason": "The diff touches symbols related to rule 'RULE-005' (getOrdersByUser, validateOrgAccess).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "getOrdersByUser",
+        "validateOrgAccess"
+      ]
+    },
+    {
+      "rule_id": "RULE-006",
+      "reason": "The diff touches symbols related to rule 'RULE-006' (updateOrderStatus, validateStatusTransition).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "updateOrderStatus",
+        "validateStatusTransition"
+      ]
+    },
+    {
+      "rule_id": "RULE-007",
+      "reason": "The diff touches symbols related to rule 'RULE-007' (confirmPayment, markOrderPaid, processOrder).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "confirmPayment",
+        "markOrderPaid",
+        "processOrder"
+      ]
+    },
+    {
+      "rule_id": "RULE-008",
+      "reason": "The diff touches symbols related to rule 'RULE-008' (createShipment, decrementInventory).",
+      "confidence": "medium",
+      "affected_call_chain": [
+        "createShipment",
+        "decrementInventory"
+      ]
+    }
+  ],
+  "validation_results": [
+    {
+      "rule_id": "RULE-001",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-002",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-003",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-005",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-006",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-007",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    },
+    {
+      "rule_id": "RULE-008",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.",
+      "evidence": []
+    }
+  ],
+  "security_findings": [
+    {
+      "rule_id": "RULE-005",
+      "risk_type": "cross-tenant-exposure",
+      "verdict": "NEEDS_EVIDENCE",
+      "explanation": "Security analysis could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Risk type 'cross-tenant-exposure' detected by heuristic. Manual review required."
+    }
+  ],
+  "test_gaps": [
+    {
+      "rule_id": "RULE-001",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-002",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-003",
+      "has_coverage": false,
+      "generated_test_path": "C:\\Users\\ASUS\\OneDrive\\Desktop\\InvariantOs\\demo-repo\\tests\\generated\\rule_003_regression.test.js",
+      "generated_test_code": "/**\n * Regression test skeleton for RULE-003\n * Auto-generated by InvariantOS Test Gap Agent (LLM unavailable — skeleton only).\n *\n * Rule: The diff touches symbols related to rule 'RULE-003' (applyDiscount, validateDiscountCode).\n * Call chain: applyDiscount → validateDiscountCode\n *\n * TODO: Fill in the test body to assert the violation scenario.\n * Run with: npx jest tests/generated/rule_003_regression.test.js\n */\n\n'use strict';\n\n// TODO: import the relevant module\n// const { applyDiscount } = require('../../src/discounts');\n\ndescribe('RULE-003 regression — The diff touches symbols related to rule 'RULE-003' (applyDi', () => {\n  test.todo('Add regression test — requires LLM to generate (set WATSONX_API_KEY or OPENAI_API_KEY)');\n});\n"
+    },
+    {
+      "rule_id": "RULE-005",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-006",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-007",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    },
+    {
+      "rule_id": "RULE-008",
+      "has_coverage": true,
+      "generated_test_path": null,
+      "generated_test_code": null
+    }
+  ],
+  "final_verdict": "NEEDS_EVIDENCE",
+  "final_verdict_label": "NEEDS EVIDENCE: Critical Rule Has No Regression Coverage",
+  "summary_markdown": "## ⚠️ NEEDS EVIDENCE: Critical Rule Has No Regression Coverage\n\n> **InvariantOS verdict:** `NEEDS EVIDENCE` — Coverage gaps or ambiguous validation. Manual review required.\n\n**Analysis ID:** `run-2026-09-26-183349-b1a47f`  \n**Analysed at:** 2026-09-26 18:33 UTC\n\n---\n\n### 📋 What this PR does\n\nChanges in src/shipments.js — modified symbols: require, shipmentJob (+3 lines, -1 lines).\n\n---\n\n### 📌 Impacted Business Rules\n\n#### RULE-001 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-001' (cancelOrder, updateOrderStatus, shipmentJob).\n**Confidence:** `medium`\n**Call chain:** `cancelOrder` → `updateOrderStatus` → `shipmentJob` → `createShipment`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-002 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-002' (processRefund, getPaymentAmount).\n**Confidence:** `medium`\n**Call chain:** `processRefund` → `getPaymentAmount`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-003 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-003' (applyDiscount, validateDiscountCode).\n**Confidence:** `medium`\n**Call chain:** `applyDiscount` → `validateDiscountCode`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ⚠️ No existing regression test found for this rule.\n**Generated test:** [`C:\\Users\\ASUS\\OneDrive\\Desktop\\InvariantOs\\demo-repo\\tests\\generated\\rule_003_regression.test.js`](C:\\Users\\ASUS\\OneDrive\\Desktop\\InvariantOs\\demo-repo\\tests\\generated\\rule_003_regression.test.js)\n\n> Run this test to confirm the violation and verify the fix:\n> ```bash\n> npx jest C:\\Users\\ASUS\\OneDrive\\Desktop\\InvariantOs\\demo-repo\\tests\\generated\\rule_003_regression.test.js\n> ```\n\n#### RULE-005 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-005' (getOrdersByUser, validateOrgAccess).\n**Confidence:** `medium`\n**Call chain:** `getOrdersByUser` → `validateOrgAccess`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-006 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-006' (updateOrderStatus, validateStatusTransition).\n**Confidence:** `medium`\n**Call chain:** `updateOrderStatus` → `validateStatusTransition`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-007 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-007' (confirmPayment, markOrderPaid, processOrder).\n**Confidence:** `medium`\n**Call chain:** `confirmPayment` → `markOrderPaid` → `processOrder`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n#### RULE-008 — ⚠️ NEEDS EVIDENCE\n\n**Why impacted:** The diff touches symbols related to rule 'RULE-008' (createShipment, decrementInventory).\n**Confidence:** `medium`\n**Call chain:** `createShipment` → `decrementInventory`\n\n**Validation:** Automated validation could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Manual review required — do not merge without confirming this rule is upheld.\n\n**Test coverage:** ✅ Existing tests cover this rule.\n\n---\n\n### 🔒 Security & Access Control\n\n- ⚠️ **RULE-005** `[cross-tenant-exposure]`: Security analysis could not complete (No LLM credentials found. Set WATSONX_API_KEY or OPENAI_API_KEY in your .env file.). Risk type 'cross-tenant-exposure' detected by heuristic. Manual review required.\n\n---\n\n### 🔧 Required Action\n\n**Do not merge without manual review.** One or more rules could not be definitively validated — either the LLM was uncertain, or a critical rule has no regression test.\n\nAdd the generated regression test and set `WATSONX_API_KEY` or `OPENAI_API_KEY` if LLM analysis was skipped.\n\n---\n\n_🤖 Generated by [InvariantOS](https://github.com/invariantos) at 2026-09-26 18:33 UTC_\n_Analysis ID: `run-2026-09-26-183349-b1a47f`_"
+}

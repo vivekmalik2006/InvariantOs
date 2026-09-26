@@ -1,0 +1,11 @@
+{
+  "analysis_id": "run-2026-09-26-183934-82869f",
+  "pr_diff_summary": "Changes in unknown — modified symbols: unknown symbols (+0 lines, -0 lines).",
+  "impacted_rules": [],
+  "validation_results": [],
+  "security_findings": [],
+  "test_gaps": [],
+  "final_verdict": "SAFE",
+  "final_verdict_label": "SAFE TO MERGE",
+  "summary_markdown": "✅ **SAFE TO MERGE** — No business rules are affected by this change."
+}
