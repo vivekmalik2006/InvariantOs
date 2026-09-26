@@ -8,9 +8,12 @@ from __future__ import annotations
 import os
 import re
 import logging
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# Resolve .env relative to the repo root (two levels up from this file),
+# so it is always found regardless of which directory uvicorn is launched from.
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 logger = logging.getLogger(__name__)
 
@@ -86,8 +89,9 @@ def _call_watsonx(system_prompt: str, user_prompt: str, json_mode: bool) -> str:
     )
     client = APIClient(credentials)
 
+    # ASSUMPTION: using meta-llama/llama-3-3-70b-instruct — available on Lite plan
     model = ModelInference(
-        model_id="ibm/granite-13b-chat-v2",
+        model_id="meta-llama/llama-3-3-70b-instruct",
         api_client=client,
         project_id=os.environ.get("WATSONX_PROJECT_ID", ""),
         params={
