@@ -8,6 +8,7 @@ Pages:
 
 Calls the FastAPI orchestrator at http://localhost:8000.
 """
+import os
 import time
 import json
 from pathlib import Path
@@ -18,7 +19,7 @@ import streamlit as st
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-API_BASE = "http://localhost:8000"
+API_BASE = os.environ.get("ORCHESTRATOR_URL", "http://localhost:8000").rstrip("/")
 
 # Pre-seeded diffs for the one-click demo
 _SEEDED_DIFF_PATH = Path(__file__).parent.parent / "demo-repo" / "seeded-diff.patch"
@@ -85,7 +86,10 @@ try:
     else:
         st.sidebar.warning("⚠️ Orchestrator responding but not healthy")
 except Exception:
-    st.sidebar.error("❌ Orchestrator offline — start with `uvicorn orchestrator.main:app`")
+    if "localhost" in API_BASE:
+        st.sidebar.error("❌ Orchestrator offline — start with `uvicorn orchestrator.main:app`")
+    else:
+        st.sidebar.error(f"❌ Orchestrator offline — check that `ORCHESTRATOR_URL` ({API_BASE}) is reachable")
 
 
 # ===========================================================================

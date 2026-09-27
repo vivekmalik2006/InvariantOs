@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: invariantos-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn orchestrator.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: WATSONX_API_KEY
+        sync: false          # fill in Render dashboard → leave blank here for security
+      - key: WATSONX_PROJECT_ID
+        sync: false
+      - key: WATSONX_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+  - type: web
+    name: invariantos-dashboard
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: ORCHESTRATOR_URL
+        sync: false          # set to the URL of invariantos-api after first deploy
+    autoDeploy: true
