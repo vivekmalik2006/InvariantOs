@@ -61,10 +61,10 @@ invariantos/
     agents/
       change_impact.py      # Member 2 — detects affected rules
       contract_validator.py # Member 2 — validates rule compliance
-      security_access.py    # Member 3 stub
-      test_gap.py           # Member 3 stub
-      evidence_report.py    # Member 4 stub
-      rule_miner.py         # Member 1 stub
+      security_access.py    # Member 3 — detects security/access-control violations
+      test_gap.py           # Member 3 — identifies test gaps & generates regression tests
+      evidence_report.py    # Member 4 — assembles AnalysisReport & renders summary markdown
+      rule_miner.py         # Member 1 — mines business rules from docs, source & postmortems
     data/
       rules.json            # Behavioral Contract Graph
       analyses/             # Persisted AnalysisReport JSON files
